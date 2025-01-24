@@ -10,16 +10,22 @@
 	<link rel="shortcut icon" href="<?php echo config_item('url_image'); ?>old_logo.png" />
 	<title>Login | <?php echo config_item('instansi_long_name'); ?></title>
 
-	<link href="<?php echo config_item('url_template'); ?>gentelella/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="<?php echo config_item('url_template'); ?>gentelella/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link href="<?php echo config_item('url_template'); ?>gentelella/vendors/bootstrap/dist/css/bootstrap.min.css"
+		rel="stylesheet">
+	<link href="<?php echo config_item('url_template'); ?>gentelella/vendors/font-awesome/css/font-awesome.min.css"
+		rel="stylesheet">
 	<link href="<?php echo config_item('url_template'); ?>gentelella/build/css/custom.min.css" rel="stylesheet">
 
 	<link href="<?php echo config_item('url_template'); ?>gentelella/vendors/nprogress/nprogress.css" rel="stylesheet">
-	<link href="<?php echo config_item('url_template'); ?>gentelella/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
-	<link href="<?php echo config_item('url_template'); ?>gentelella/vendors/animate.css/animate.min.css" rel="stylesheet">
+	<link
+		href="<?php echo config_item('url_template'); ?>gentelella/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css"
+		rel="stylesheet">
+	<link href="<?php echo config_item('url_template'); ?>gentelella/vendors/animate.css/animate.min.css"
+		rel="stylesheet">
 
 	<script src="<?php echo config_item('url_template'); ?>gentelella/vendors/jquery/dist/jquery.min.js"></script>
-	<script src="<?php echo config_item('url_template'); ?>gentelella/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script
+		src="<?php echo config_item('url_template'); ?>gentelella/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 
 </head>
 
@@ -58,13 +64,20 @@
 	</div>
 </body>
 <script type="text/javascript">
-	$(document).ready(function() {
-		$('#id_username').bind('keyup', function(event) {
+	let msg = '<?= isset($_SESSION['log_in']); ?>';
+	if (msg == '') {
+		$('#id_pesan').removeClass();
+		$('#id_pesan').addClass('pesan-wait');
+		$('#id_pesan').html("Session anda habis, silahkan login kembali...");
+	}
+
+	$(document).ready(function () {
+		$('#id_username').bind('keyup', function (event) {
 			if (event.keyCode == 13) {
 				document.getElementById('id_password').focus();
 			}
 		});
-		$('#id_password').bind('keyup', function(event) {
+		$('#id_password').bind('keyup', function (event) {
 			if (event.keyCode == 13) {
 				do_login();
 			}
@@ -77,7 +90,7 @@
 		$('#id_pesan').html("Sedang Verifikasi Username dan Password ...");
 
 
-		$.post('<?php echo site_url("login/check_login"); ?>', $("#form_login").serialize(), function(data, status) {
+		$.post('<?php echo site_url("login/check_login"); ?>', $("#form_login").serialize(), function (data, status) {
 			if (status == 'success') {
 				var obj = jQuery.parseJSON(data);
 

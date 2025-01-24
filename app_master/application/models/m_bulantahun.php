@@ -12,7 +12,7 @@ class m_bulantahun extends CI_Model
 				select distinct
 					date_part('month', waktu) bulanno ,
 					trim(to_char(waktu, 'Month')) bulan
-				from dailyreport.absen
+				from htr.absen
 				order by date_part('month', waktu)
 		");
 		$this->db->close();
@@ -24,7 +24,7 @@ class m_bulantahun extends CI_Model
 		$q = $this->db->query("
 		SELECT	DISTINCT
 				date_part('year', waktu) as tahun
-		FROM dailyreport.absen
+		FROM htr.absen
 		ORDER BY date_part('year', waktu)
 		");
 		$this->db->close();

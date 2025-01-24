@@ -13,6 +13,13 @@ $auto['siap']['config']            = array();
 $auto['siap']['language']        = array();
 $auto['siap']['model']            = array();
 
+$auto['absensi']['packages']        = array();
+$auto['absensi']['libraries']        = array('database', 'session', 'cache', 'image_proses', 'cetak_phpexcel', 'template_cetak', 'tp_connpgsql', 'tp_notification');
+$auto['absensi']['helper']            = array('url', 'language', 'tp_input', 'tp_tanggal');
+$auto['absensi']['config']            = array();
+$auto['absensi']['language']        = array();
+$auto['absensi']['model']            = array();
+
 $auto['master']['packages']        = array();
 $auto['master']['libraries']    = array('database', 'session', 'cache', 'cetak_phpexcel', 'template_cetak');
 $auto['master']['helper']        = array('url', 'tp_input', 'language');

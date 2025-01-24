@@ -70,6 +70,7 @@ $config['email_mailtype'] = "html";
 $cfg_modul['index']			=	array('0', 'index', 'Sistem Informasi Manajemmen SDM');
 $cfg_modul['dailyreport']	=	array('98', 'dailyreport', 'Daily Report');
 $cfg_modul['siap']			=	array('1', 'siap', 'Sistem Administrasi Pegawai');
+$cfg_modul['absensi']		=	array('1', 'absensi', 'Absensi Pegawai');
 $cfg_modul['master']		=	array('900', 'master', 'Master Modul');
 
 $data = array();

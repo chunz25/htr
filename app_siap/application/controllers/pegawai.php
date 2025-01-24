@@ -20,9 +20,10 @@ class pegawai extends SIAP_Controller
 			'v_lokasikerja' => ifunsetempty($_POST, 'lokasiid', null),
 			'v_tglmulai' => ifunsetempty($_POST, 'tglmulai', null),
 			'v_tglselesai' => ifunsetempty($_POST, 'tglselesai', null),
-			'v_start' => ifunsetempty($_POST, 'start', 0),
+			'v_start' => ifunsetempty($_POST, 'start', '0'),
 			'v_limit' => ifunsetempty($_POST, 'limit', config_item('PAGESIZE')),
 		);
+		// die(var_dump($params));
 		$mresult = $this->m_pegawai->getListPegawai($params);
 		echo json_encode($mresult);
 	}

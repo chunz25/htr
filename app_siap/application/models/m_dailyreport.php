@@ -20,6 +20,7 @@ class m_dailyreport extends CI_Model
 		$this->CI->db->close();
 		return $this->CI->db->trans_status();
 	}
+
 	function getShortNotif($penerimaid)
 	{
 		$this->CI->load->database();
@@ -35,6 +36,7 @@ class m_dailyreport extends CI_Model
 		$this->CI->db->close();
 		return $q->result_array();
 	}
+
 	function getCountNotifUnread($penerimaid)
 	{
 		$this->CI->load->database();
@@ -44,6 +46,7 @@ class m_dailyreport extends CI_Model
 		$this->CI->db->close();
 		return $q->first_row()->jml;
 	}
+
 	function updateNotifRead($penerimaid)
 	{
 		$this->CI->load->database();
@@ -68,7 +71,7 @@ class m_dailyreport extends CI_Model
 	function getReportHTR($params)
 	{
 		// var_dump($params);
-		$mresult = $this->tp_connpgsql->callSpCount('dailyreport.sp_getdailyreportv1', $params, false);
+		$mresult = $this->tp_connpgsql->callSpCount('htr.sp_getdailyreportv1', $params, false);
 		return $mresult;
 	}
 
@@ -78,7 +81,7 @@ class m_dailyreport extends CI_Model
 		$pegawaiid = $this->session->userdata('pegawaiid');
 		$cond_where = '';
 
-		if ($pegawaiid == '000000000726') {
+		if ($pegawaiid == 726) {
 			if (!empty($params['v_satkerid'])) {
 				$cond_where =
 					" where x.waktu BETWEEN TO_DATE('"
@@ -99,7 +102,7 @@ class m_dailyreport extends CI_Model
 					"','YYYY/MM/DD') AND length(x.satkerid) < 5
 					 ORDER BY x.gol , COALESCE(x.satkerid,'99'), (CASE WHEN x.pegawaiid = (SELECT s1.kepalaid FROM satker s1 WHERE s1.satkerid = x.satkerid) THEN '1' ELSE '0' END) DESC, x.waktu";
 			}
-		} else if ($pegawaiid == '000000000853') {
+		} else if ($pegawaiid == 853) {
 			if (!empty($params['v_satkerid'])) {
 				$cond_where =
 					" where x.waktu BETWEEN TO_DATE('"
@@ -139,7 +142,58 @@ class m_dailyreport extends CI_Model
 		
 
 		$query = "
-		SELECT  * FROM dailyreport.vwdailyreport x
+		SELECT  * FROM (
+			SELECT 	
+				a.pengajuanid ,  
+				a.pegawaiid , 
+				a.nourut ,
+				u.nik ,
+				np.fullname as nama ,
+				l.name as level ,
+				j.name as jabatan ,
+				loc.name as lokasi ,
+				sp.satkerid as idsatker ,
+				vs.code as satkerid ,
+				vs.unitkerja ,
+				vs.direktorat ,
+				vs.divisi ,
+				vs.departemen ,
+				vs.seksi ,
+				vs.subseksi ,
+				to_char(a.jamupd, 'DD/MM/YYYY') AS tglpermohonan ,
+				to_char(a.waktu, 'DD/MM/YYYY') AS tglmulai ,
+				a.actjob ,
+				a.keterangan ,
+				a.atasannotes ,
+				CASE
+					WHEN a.jenisid = 1 THEN 'Daily Report Activity'
+					ELSE NULL
+				END AS jenis ,
+				a.status AS statusid ,
+				g.status ,
+				a.atasanid ,
+				np1.fullname as atasannama ,
+				a.waktu,
+				l.gol ,
+				l.id as levelid ,
+				l.susunan as idnew ,
+				rj.lokasiid ,
+				dp.jeniskelamin
+			FROM 
+				htr.absen a
+				LEFT JOIN public.pegawai p ON p.id = a.pegawaiid
+				LEFT JOIN public.datapegawai dp ON dp.pegawaiid = a.pegawaiid
+				LEFT JOIN public.users u ON u.id = p.userid
+				LEFT JOIN public.namapegawai np ON np.pegawaiid = a.pegawaiid
+				LEFT JOIN public.namapegawai np1 ON np1.pegawaiid = a.atasanid
+				LEFT JOIN struktur.satkerpegawai sp ON sp.pegawaiid = a.pegawaiid
+				LEFT JOIN struktur.vw_satkertree_hr vs ON vs.id = sp.satkerid
+				LEFT JOIN struktur.jabatan j ON j.id = sp.jabatanid
+				LEFT JOIN struktur.levelgrade l ON l.id = sp.levelid
+				LEFT JOIN public.riwayatjabatan rj ON rj.pegawaiid = a.pegawaiid
+				LEFT JOIN public.lokasi loc ON loc.id = rj.lokasiid
+				LEFT JOIN htr.statusreport g ON a.status = g.statusid
+		) x
 		" . $cond_where;
 
 		$q = $this->db->query("
@@ -181,7 +235,7 @@ class m_dailyreport extends CI_Model
 		}
 
 		$query = "
-			SELECT * FROM dailyreport.vwcountreport a
+			SELECT * FROM htr.vw_countreport a
 		" . $cond_where;
 
 		$q = $this->db->query("
@@ -202,19 +256,19 @@ class m_dailyreport extends CI_Model
 
 	function getDataSum($params)
 	{
-		$result = $this->tp_connpgsql->callSpCount('dailyreport.sp_getdatasum', $params);
+		$result = $this->tp_connpgsql->callSpCount('htr.sp_getdatasum', $params);
 		return $result;
 	}
 
 	function getDailyreportById($params)
 	{
-		$mresult = $this->tp_connpgsql->callSpReturn('dailyreport.sp_getdailybyid', $params);
+		$mresult = $this->tp_connpgsql->callSpReturn('htr.sp_getdailybyid', $params);
 		return $mresult['firstrow'];
 	}
 
 	function getDetailPengajuanDailyreport($pengajuanid)
 	{
-		$mresult = $this->tp_connpgsql->callSpReturn('dailyreport.sp_getdetailpengajuandaily', array($pengajuanid));
+		$mresult = $this->tp_connpgsql->callSpReturn('htr.sp_getdetailpengajuandaily', array($pengajuanid));
 		return $mresult['data'];
 	}
 
@@ -223,19 +277,20 @@ class m_dailyreport extends CI_Model
 		$this->load->database();
 		$this->db->trans_start();
 		$q = $this->db->query("
-			SELECT dailyreport.sp_updstatusverifikasi(?,?,?,?)
+			SELECT htr.sp_updstatusverifikasi(?,?,?,?)
 		", $params);
 		$this->db->trans_complete();
 		$this->db->close();
 		return $this->db->trans_status();
 	}
+
 	function updStatusExp()
 	{
 		$this->load->database();
 		$this->db->trans_start();
 		$q = $this->db->query(
 			"
-			update dailyreport.absen a set
+			update htr.absen a set
 			status = '1'
 			where status = '6' and
 			--a.jamupd <= cast(concat(extract(year from CURRENT_DATE)-1,'-','12','-','14') as date) and a.jamupd <= cast(concat(extract(year from CURRENT_DATE),'-',extract(month from CURRENT_DATE),'-','14') as date)

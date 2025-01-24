@@ -50,13 +50,10 @@ $active_record = TRUE;
 
 
 $db['default']['port'] = '5432';
-$db['default']['hostname'] = '10.140.4.249';
-//$db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'hris';
-// $db['default']['username'] = 'postgres';
-// $db['default']['password'] = '1tAdmin2011';
-$db['default']['password'] = 'qwertyuiop';
-$db['default']['database'] = 'hristimesheet';
+$db['default']['hostname'] = '10.101.0.85';
+$db['default']['username'] = 'postgres';
+$db['default']['password'] = 'eci2017';
+$db['default']['database'] = 'hris_dev';
 
 $db['default']['dbdriver'] = 'postgre';
 
@@ -70,6 +67,27 @@ $db['default']['dbcollat'] = 'utf8_general_ci';
 $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
+
+// DATABASE 2 LOAD HRD SYSTEM ABSENSI
+
+// $db['hrd']['port'] 	   = 5432;
+$db['hrd']['hostname'] = 'hrd-103\SQLEXPRESS'; //10.101.34.29
+$db['hrd']['username'] = 'sa';
+$db['hrd']['password'] = 'HRISECI2018';
+$db['hrd']['database'] = 'FINGERPRINT2020';
+
+$db['hrd']['dbdriver'] = 'sqlsrv';
+
+$db['hrd']['dbprefix'] = '';
+$db['hrd']['pconnect'] = FALSE;
+$db['hrd']['db_debug'] = (ENVIRONMENT !== 'production');
+$db['hrd']['cache_on'] = FALSE;
+$db['hrd']['cachedir'] = '';
+$db['hrd']['char_set'] = 'utf8';
+$db['hrd']['dbcollat'] = 'utf8_general_ci';
+$db['hrd']['swap_pre'] = '';
+$db['hrd']['autoinit'] = TRUE;
+$db['hrd']['stricton'] = FALSE;
 
 /* End of file database.php */
 /* Location: ./application/config/database.php */

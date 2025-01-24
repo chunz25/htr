@@ -1,35 +1,46 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-Class m_level extends CI_Model {
-	function __construct(){
+<?php if (!defined('BASEPATH'))
+	exit('No direct script access allowed');
+class m_level extends CI_Model
+{
+	function __construct()
+	{
 		parent::__construct();
 	}
-	function getLevel(){
+
+	function getLevel()
+	{
 		$this->load->database();
-		$q = $this->db->query("SELECT levelid AS id, level AS text, gol FROM level ORDER BY gol");
+		$q = $this->db->query("SELECT id, name AS text, gol, susunan FROM struktur.levelgrade ORDER BY susunan");
 		return $q->result_array();
 	}
-	function tambah($params){
+
+	function tambah($params)
+	{
 		$this->load->database();
 		$this->db->trans_start();
-		$q = $this->db->query("INSERT INTO level(levelid, level, gol) VALUES(?,?,?)", $params);
-		$this->db->trans_complete();		
+		$q = $this->db->query("INSERT INTO struktur.levelgrade (id, name, gol) VALUES(?,?,?)", $params);
+		$this->db->trans_complete();
 		$this->db->close();
-		return $this->db->trans_status();								
+		return $this->db->trans_status();
 	}
-	function ubah($params){
+
+	function ubah($params)
+	{
 		$this->load->database();
 		$this->db->trans_start();
-		$q = $this->db->query("UPDATE level SET level = ?, gol = ? WHERE levelid = ?", array($params['level'], $params['gol'], $params['levelid']));
-		$this->db->trans_complete();		
+		$q = $this->db->query("UPDATE struktur.levelgrade SET name = ?, gol = ? WHERE id = ?", array($params['level'], $params['gol'], $params['id']));
+		$this->db->trans_complete();
 		$this->db->close();
-		return $this->db->trans_status();								
+		return $this->db->trans_status();
 	}
-	function hapus($id){
+	
+	function hapus($id)
+	{
 		$this->load->database();
 		$this->db->trans_start();
-		$q = $this->db->query("DELETE FROM level WHERE levelid = ?", array($id));
-		$this->db->trans_complete();		
+		$q = $this->db->query("DELETE FROM struktur.levelgrade WHERE id = ?", array($id));
+		$this->db->trans_complete();
 		$this->db->close();
-		return $this->db->trans_status();								
+		return $this->db->trans_status();
 	}
 }

@@ -8,13 +8,13 @@ class m_history extends CI_Model
 
 	function getListPegawai($params)
 	{
-		$mresult = $this->tp_connpgsql->callSpCount('public.sp_getdatahistorypegawai_new1', $params, false);
+		$mresult = $this->tp_connpgsql->callSpCount('htr.sp_getdatahistorypegawai_new1', $params, false);
 		return $mresult;
 	}
 
 	function getListHistoryDaily($params)
 	{
-		$mresult = $this->tp_connpgsql->callSpCount('dailyreport.sp_getlistdailypeg1', $params, false);
+		$mresult = $this->tp_connpgsql->callSpCount('htr.sp_getlistdailypeg1', $params, false);
 
 		$data = array();
 		foreach ($mresult['data'] as $r) {
@@ -39,7 +39,7 @@ class m_history extends CI_Model
 		$this->load->database();
 		$this->db->trans_start();
 		$q = $this->db->query("
-			SELECT dailyreport.sp_deletedaily(?,?);
+			SELECT htr.sp_deletedaily(?,?);
 		", $params);
 		$this->db->trans_complete();
 		$this->db->close();
@@ -50,7 +50,7 @@ class m_history extends CI_Model
 	{
 		$this->load->database();
 		$q = $this->db->query("
-			SELECT DISTINCT TO_CHAR(tgl, 'YYYY-MM-DD') AS tgl FROM dailyreport.harilibur WHERE tgl >= TO_DATE('01/01/2018','DD/MM/YYYY') ORDER BY tgl ASC
+			SELECT DISTINCT TO_CHAR(tgl, 'YYYY-MM-DD') AS tgl FROM public.harilibur WHERE tgl >= TO_DATE('01/01/2018','DD/MM/YYYY') ORDER BY tgl ASC
 		");
 		$this->db->close();
 
@@ -65,13 +65,13 @@ class m_history extends CI_Model
 
 	function getDailyById($params)
 	{
-		$mresult = $this->tp_connpgsql->callSpReturn('dailyreport.sp_getdailybyid', $params);
+		$mresult = $this->tp_connpgsql->callSpReturn('htr.sp_getdailybyid', $params);
 		return $mresult['firstrow'];
 	}
 
 	function getDetailPengajuanDaily($pengajuanid)
 	{
-		$mresult = $this->tp_connpgsql->callSpReturn('dailyreport.sp_getdetailpengajuandaily', array($pengajuanid));
+		$mresult = $this->tp_connpgsql->callSpReturn('htr.sp_getdetailpengajuandaily', array($pengajuanid));
 		return $mresult['data'];
 	}
 
@@ -84,7 +84,7 @@ class m_history extends CI_Model
 		}
 		$sql = "
 			SELECT jenisformid AS id, jenisform AS text
-			FROM dailyreport.jenisform
+			FROM htr.jenisform
 			" . $whereClause . "
 			ORDER BY jenisformid
 		";
@@ -97,89 +97,9 @@ class m_history extends CI_Model
 	function getComboStatusDaily()
 	{
 		$this->load->database();
-		$q = $this->db->query("select * from dailyreport.statusreport");
+		$q = $this->db->query("select * from htr.statusreport");
 		$this->db->close();
 		return $q->result_array();
-	}
-
-	function getVerifikatorDaily($pegawaiid)
-	{
-		$this->load->database();
-		$q = $this->db->query("
-			SELECT p.pegawaiid as atasanid, p.nik as atasannik, fnnamalengkap(p.namadepan, p.namabelakang) atasannama,
-				public.fnsatkerlevel(vj.satkerid,'2') AS atasandivisi, j.jabatan AS atasanjabatan, loc.lokasi AS atasanlokasi, '' AS atasanemail
-			FROM pegawai p
-			LEFT JOIN vwjabatanterakhir vj ON p.pegawaiid = vj.pegawaiid
-			LEFT JOIN jabatan j ON vj.jabatanid = j.jabatanid
-			LEFT JOIN level lv ON vj.levelid = lv.levelid
-			LEFT JOIN lokasi loc ON vj.lokasikerja = loc.lokasiid
-			WHERE p.pegawaiid = public.fngetatasan(?) AND lv.gol NOT IN ('0','1','2','3')
-		", array($pegawaiid));
-		$this->db->close();
-
-		$result = array(
-			'atasanid' => '',
-			'atasannik' => '',
-			'atasannama' => '',
-			'atasandivisi' => '',
-			'atasanjabatan' => '',
-			'atasanlokasi' => '',
-			'atasanemail' => '',
-		);
-
-		if ($q->num_rows() > 0) {
-			$r = $q->first_row();
-			$result = array(
-				'atasanid' => $r->atasanid,
-				'atasannik' => $r->atasannik,
-				'atasannama' => $r->atasannama,
-				'atasandivisi' => $r->atasandivisi,
-				'atasanjabatan' => $r->atasanjabatan,
-				'atasanlokasi' => $r->atasanlokasi,
-				'atasanemail' => $r->atasanemail,
-			);
-		}
-		return $result;
-	}
-
-	function getApprovalDaily($pegawaiid)
-	{
-		$this->load->database();
-		$q = $this->db->query("
-			SELECT p.pegawaiid as atasanid, p.nik as atasannik, fnnamalengkap(p.namadepan, p.namabelakang) atasannama,
-				public.fnsatkerlevel(vj.satkerid,'2') AS atasandivisi, j.jabatan AS atasanjabatan, loc.lokasi AS atasanlokasi, '' AS atasanemail
-			FROM pegawai p
-			LEFT JOIN vwjabatanterakhir vj ON p.pegawaiid = vj.pegawaiid
-			LEFT JOIN jabatan j ON vj.jabatanid = j.jabatanid
-			LEFT JOIN level lv ON vj.levelid = lv.levelid
-			LEFT JOIN lokasi loc ON vj.lokasikerja = loc.lokasiid
-			WHERE p.pegawaiid = public.fngetatasan(?) AND lv.gol IN ('0','1','2','3')
-		", array($pegawaiid));
-		$this->db->close();
-
-		$result = array(
-			'atasanid' => '',
-			'atasannik' => '',
-			'atasannama' => '',
-			'atasandivisi' => '',
-			'atasanjabatan' => '',
-			'atasanlokasi' => '',
-			'atasanemail' => '',
-		);
-
-		if ($q->num_rows() > 0) {
-			$r = $q->first_row();
-			$result = array(
-				'atasanid' => $r->atasanid,
-				'atasannik' => $r->atasannik,
-				'atasannama' => $r->atasannama,
-				'atasandivisi' => $r->atasandivisi,
-				'atasanjabatan' => $r->atasanjabatan,
-				'atasanlokasi' => $r->atasanlokasi,
-				'atasanemail' => $r->atasanemail,
-			);
-		}
-		return $result;
 	}
 
 	function updStatusExp()
@@ -188,7 +108,7 @@ class m_history extends CI_Model
 		$this->db->trans_start();
 		$q = $this->db->query(
 			"
-			update dailyreport.absen a set
+			update htr.absen a set
 			status = '1'
 			where status = '6' and
 			--a.jamupd <= cast(concat(extract(year from CURRENT_DATE)-1,'-','12','-','14') as date) and a.jamupd <= cast(concat(extract(year from CURRENT_DATE),'-',extract(month from CURRENT_DATE),'-','14') as date)

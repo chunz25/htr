@@ -1,4 +1,5 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (!defined('BASEPATH'))
+	exit('No direct script access allowed');
 
 class listapprove extends Wfh_Controller
 {
@@ -6,7 +7,7 @@ class listapprove extends Wfh_Controller
 	{
 		parent::__construct();
 		$this->load->model('m_approve');
-    	$this->load->model('m_pengajuan');
+		$this->load->model('m_pengajuan');
 		$this->load->model('m_history');
 	}
 
@@ -72,7 +73,7 @@ class listapprove extends Wfh_Controller
 	{
 		$vals = explode(",", ifunsetempty($_POST, 'vals', null));
 		$atasannotes = ifunsetempty($_POST, 'atasannotes', null);
-    	$pegawaiid = ifunsetempty($_POST, 'pegawaiid', null);
+		$pegawaiid = ifunsetempty($_POST, 'pegawaiid', null);
 		$count = count($vals);
 		for ($i = 1; $i < $count; $i++) {
 			$this->m_approve->approvebulk($vals[$i], $pegawaiid, $atasannotes);
@@ -109,7 +110,8 @@ class listapprove extends Wfh_Controller
 		$nik = ifunsetempty($_POST, 'nik', null);
 		$atasannotes = ifunsetempty($_POST, 'atasannotes', null);
 		$timezone = "Asia/Jakarta";
-		if (function_exists('date_default_timezone_set')) date_default_timezone_set($timezone);
+		if (function_exists('date_default_timezone_set'))
+			date_default_timezone_set($timezone);
 		$tglpermohonan = date('Y-m-d H:i:s');
 		$status = '2';
 		$keterangan = 'Disetujui Approval';
@@ -156,7 +158,8 @@ class listapprove extends Wfh_Controller
 		$username = str_replace('_', ' ', $name);
 		$nik = ifunsetempty($_POST, 'nik', null);
 		$timezone = "Asia/Jakarta";
-		if (function_exists('date_default_timezone_set')) date_default_timezone_set($timezone);
+		if (function_exists('date_default_timezone_set'))
+			date_default_timezone_set($timezone);
 		$tglpermohonan = date('Y-m-d H:i:s');
 		$action = ifunsetempty($_POST, 'action', null);
 		$atasanid = ifunsetempty($_POST, 'atasanid', null);
@@ -232,31 +235,24 @@ class listapprove extends Wfh_Controller
 	function infoAtasan()
 	{
 		$atasanid = $this->session->userdata('atasanid');
-		$verifikatorid = $this->session->userdata('verifikatorid');
-		$ratasan = '';
-		if (!empty($atasanid)) {
-			$ratasan = $this->m_pengajuan->getappver($atasanid);
-		}
-		$rverify = '';
-		if (!empty($verifikatorid)) {
-			$rverify = $this->m_pengajuan->getappver($verifikatorid);
-		}
+		$verifid = $this->session->userdata('verifikatorid');
+		$rAtasan = $this->m_pengajuan->getAppVer($atasanid);
+		$rVerify = !empty($verifid) ? $this->m_pengajuan->getAppVer($verifid) : array();
 
-		$result = array(
-			'verifikatorid' => !empty($rverify[0]['pegawaiid']) ? $rverify[0]['pegawaiid'] : null,
-			'verifikatornik' => !empty($rverify[0]['nik']) ? $rverify[0]['nik'] : null,
-			'verifikatornama' => !empty($rverify[0]['nama']) ? $rverify[0]['nama'] : null,
-			'verifikatorjab' => !empty($rverify[0]['jabatan']) ? $rverify[0]['jabatan'] : null,
-			'verifikatoremail' => !empty($rverify[0]['emailkantor']) ? $rverify[0]['emailkantor'] : null,
-			'atasanid' => $ratasan[0]['pegawaiid'],
-			'atasannik' => $ratasan[0]['nik'],
-			'atasannama' => $ratasan[0]['nama'],
-			'atasanjab' => $ratasan[0]['jabatan'],
+		return array(
+			'verifikatorid' => null,
+			'verifikatornik' => null,
+			'verifikatornama' => null,
+			'verifikatorjab' => null,
+			'verifikatoremail' => null,
+			'atasanid' => !empty($rVerify[0]['pegawaiid']) ? $rVerify[0]['pegawaiid'] : $rAtasan[0]['pegawaiid'],
+			'atasannik' => !empty($rVerify[0]['nik']) ? $rVerify[0]['nik'] : $rAtasan[0]['nik'],
+			'atasannama' => !empty($rVerify[0]['nama']) ? $rVerify[0]['nama'] : $rAtasan[0]['nama'],
+			'atasanjab' => !empty($rVerify[0]['jabatan']) ? $rVerify[0]['jabatan'] : $rAtasan[0]['jabatan'],
+			'atasanemail' => !empty($rVerify[0]['email']) ? $rVerify[0]['email'] : $rAtasan[0]['email'],
 		);
-
-		return $result;
 	}
-	
+
 	public function getHariLibur()
 	{
 		$mresult = $this->m_approve->getHariLibur();
@@ -266,6 +262,7 @@ class listapprove extends Wfh_Controller
 		}
 		return json_encode($data);
 	}
+
 	public function getInfoPegawai()
 	{
 		$params = array(
@@ -276,6 +273,7 @@ class listapprove extends Wfh_Controller
 		$mresult = $this->m_approve->getInfoPegawai($params);
 		return $mresult['firstrow'];
 	}
+	
 	public function download()
 	{
 		$this->load->helper('download');

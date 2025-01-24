@@ -86,13 +86,13 @@ Ext.define("SIAP.modules.pegawai.App", {
               },
             },
             "->",
-            {
-              glyph: "xf196@FontAwesome",
-              text: "Tambah",
-              handler: function () {
-                Ext.History.add("#tambahpegawai");
-              },
-            },
+            // {
+            //   glyph: "xf196@FontAwesome",
+            //   text: "Tambah",
+            //   handler: function () {
+            //     Ext.History.add("#tambahpegawai");
+            //   },
+            // },
             {
               text: "Ubah",
               glyph: "xf044@FontAwesome",
@@ -323,9 +323,10 @@ Ext.define("SIAP.modules.pegawai.App", {
             { xtype: "hidden", name: "lokasikerja" },
             { xtype: "hidden", name: "atasanid" },
 
-            { fieldLabel: "Nama", name: "nama", anchor: "95%" },
-            {
-              xtype: "fieldsatker",
+            { fieldLabel: "Nama", name: "nama", anchor: "95%", readOnly: true },
+
+            /*
+            { xtype: "fieldsatker",
               fieldLabel: "Direktorat",
               name: "direktorat",
               listeners: {
@@ -467,6 +468,8 @@ Ext.define("SIAP.modules.pegawai.App", {
                 },
               },
             },
+            */
+
             {
               xtype: "combolokasikerja",
               fieldLabel: "Lokasi Kerja",

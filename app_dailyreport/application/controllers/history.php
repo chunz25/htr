@@ -8,6 +8,7 @@ class history extends Wfh_Controller
 	{
 		parent::__construct();
 		$this->load->model('m_history');
+		$this->load->model('m_pengajuan');
 	}
 
 	public function index()
@@ -37,6 +38,7 @@ class history extends Wfh_Controller
 	{
 		$nik = $this->session->userdata('nik');
 		$usergroupid = $this->session->userdata('aksesid_dailyreport');
+		$jabatanid = $this->session->userdata('jabatanid');
 		$satkerid = $this->session->userdata('satkerdisp');
 		$keyword = ifunsetempty($_GET, 'keyword', '');
 
@@ -45,6 +47,7 @@ class history extends Wfh_Controller
 			'v_nik' => $nik,
 			'v_nama' => '',
 			'v_statuspegawai' => '',
+			'v_jabatan' => $jabatanid,
 			'v_jeniskelamin' => '',
 			'v_tglmulai' => '',
 			'v_tglselesai' => '',
@@ -54,6 +57,7 @@ class history extends Wfh_Controller
 			'v_start' => ifunsetempty($_GET, 'start', 0),
 			'v_limit' => ifunsetempty($_GET, 'limit', config_item('PAGESIZE')),
 		);
+		//var_dump($params);
 
 		$mresult = $this->m_history->getListPegawai($params);
 		echo json_encode($mresult);
@@ -210,7 +214,8 @@ class history extends Wfh_Controller
 	{
 		$pegawaiid = ifunsetemptybase64($_GET, 'pegawaiid', null);
 		$nourut = ifunsetemptybase64($_GET, 'nourut', null);
-		$tahun = ifunsetemptybase64($_GET, 'periode', null);;
+		$tahun = ifunsetemptybase64($_GET, 'periode', null);
+		;
 
 		$params = array(
 			'v_pegawaiid' => $pegawaiid,
@@ -230,69 +235,31 @@ class history extends Wfh_Controller
 		$data['vharilibur'] = $this->getHariLibur();
 		$data['vjeniscuti'] = $this->m_history->getComboJenisForm();
 		$data['infopegawai'] = $this->getInfoPegawai();
-		$data['vinfoatasan'] = $this->infoAtasan($pegawaiid);
+		$data['vinfoatasan'] = $this->infoAtasan();
 		$data['pages'] = 'history';
 
 		$this->load->view($content, $data);
 		// var_dump($data);
 	}
 
-	function infoAtasan($pegawaiid)
+	function infoAtasan()
 	{
-		$mverifikator = $this->m_history->getVerifikatorDaily($pegawaiid);
-		$result = array(
-			'verifikatorid' => '',
-			'verifikatornik' => '',
-			'verifikatornama' => '',
-			'verifikatordivisi' => '',
-			'verifikatorjabatan' => '',
-			'verifikatorlokasi' => '',
-			'verifikatoremail' => '',
-			'approvalid' => '',
-			'approvalnik' => '',
-			'approvalnama' => '',
-			'approvaldivisi' => '',
-			'approvaljabatan' => '',
-			'approvallokasi' => '',
-			'approvallemail' => '',
+		$atasanid = $this->session->userdata('atasanid');
+		$verifid = $this->session->userdata('verifikatorid');
+		$rAtasan = $this->m_pengajuan->getAppVer($atasanid);
+		$rVerify = !empty($verifid) ? $this->m_pengajuan->getAppVer($verifid) : array();
+
+		return array(
+			'verifikatorid' => null,
+			'verifikatornik' => null,
+			'verifikatornama' => null,
+			'verifikatorjab' => null,
+			'verifikatoremail' => null,
+			'atasanid' => !empty($rVerify[0]['pegawaiid']) ? $rVerify[0]['pegawaiid'] : $rAtasan[0]['pegawaiid'],
+			'atasannik' => !empty($rVerify[0]['nik']) ? $rVerify[0]['nik'] : $rAtasan[0]['nik'],
+			'atasannama' => !empty($rVerify[0]['nama']) ? $rVerify[0]['nama'] : $rAtasan[0]['nama'],
+			'atasanjab' => !empty($rVerify[0]['jabatan']) ? $rVerify[0]['jabatan'] : $rAtasan[0]['jabatan'],
+			'atasanemail' => !empty($rVerify[0]['email']) ? $rVerify[0]['email'] : $rAtasan[0]['email'],
 		);
-		if (!empty($mverifikator['atasanid'])) {
-			$mapproval = $this->m_history->getApprovalDaily($mverifikator['atasanid']);
-			$result = array(
-				'verifikatorid' => $mverifikator['atasanid'],
-				'verifikatornik' => $mverifikator['atasannik'],
-				'verifikatornama' => $mverifikator['atasannama'],
-				'verifikatordivisi' => $mverifikator['atasandivisi'],
-				'verifikatorjabatan' => $mverifikator['atasanjabatan'],
-				'verifikatorlokasi' => $mverifikator['atasanlokasi'],
-				'verifikatoremail' => $mverifikator['atasanemail'],
-				'approvalid' => $mapproval['atasanid'],
-				'approvalnik' => $mapproval['atasannik'],
-				'approvalnama' => $mapproval['atasannama'],
-				'approvaldivisi' => $mapproval['atasandivisi'],
-				'approvaljabatan' => $mapproval['atasanjabatan'],
-				'approvallokasi' => $mapproval['atasanlokasi'],
-				'approvallemail' => $mapproval['atasanemail'],
-			);
-		} else {
-			$mapproval = $this->m_history->getApprovalDaily($pegawaiid);
-			$result = array(
-				'verifikatorid' => '',
-				'verifikatornik' => '',
-				'verifikatornama' => '',
-				'verifikatordivisi' => '',
-				'verifikatorjabatan' => '',
-				'verifikatorlokasi' => '',
-				'verifikatoremail' => '',
-				'approvalid' => $mapproval['atasanid'],
-				'approvalnik' => $mapproval['atasannik'],
-				'approvalnama' => $mapproval['atasannama'],
-				'approvaldivisi' => $mapproval['atasandivisi'],
-				'approvaljabatan' => $mapproval['atasanjabatan'],
-				'approvallokasi' => $mapproval['atasanlokasi'],
-				'approvallemail' => $mapproval['atasanemail'],
-			);
-		}
-		return $result;
 	}
 }

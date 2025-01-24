@@ -6,11 +6,34 @@
 			<br />
 			<br />
 			<ul class="nav side-menu">
-				<li <?php if ($pages == "pengajuan") echo 'class="active"'; ?>><a href="<?php echo site_url(); ?>/pengajuan"><i class="fa fa-edit"></i> Report Daily Activity </a></li>
-				<li <?php if ($pages == "history") echo 'class="active"'; ?>><a href="<?php echo site_url(); ?>/history"><i class="fa fa-list"></i> History Report </a></li>
-				<?php if ($this->session->userdata('aksesid_dailyreport') == '97') : ?>
-					<li <?php if ($pages == "listapprove") echo 'class="active"'; ?>><a href="<?php echo site_url(); ?>/listapprove"><i class="fa fa-check-square-o"></i> Approval Report </a></li>
+				<li <?php if ($pages == "pengajuan")
+					echo 'class="active"'; ?>><a
+						href="<?php echo site_url(); ?>/pengajuan"><i class="fa fa-edit"></i> Report Daily Activity </a>
+				</li>
+				<li <?php if ($pages == "history")
+					echo 'class="active"'; ?>><a
+						href="<?php echo site_url(); ?>/history"><i class="fa fa-list"></i> History Report </a></li>
+				<?php if ($this->session->userdata('aksesid_dailyreport') == '97'): ?>
+					<li <?php if ($pages == "listapprove")
+						echo 'class="active"'; ?>><a
+							href="<?php echo site_url(); ?>/listapprove"><i class="fa fa-check-square-o"></i> Approval
+							Report </a></li>
 				<?php endif; ?>
+				<li <?php if ($pages == "absensi") echo 'class="active"'; ?>>
+					<a href="<?php echo site_url(); ?>/absensi">
+						<i class="fa fa-book"></i>
+						Data Absensi
+					</a>
+				</li>
+				
+				<?php //if ($this->session->userdata('aksesid_dailyreport') == '97'): ?>
+					<!-- <li <?php //if ($pages == "listapproveabsensi") echo 'class="active"'; ?>>
+						<a href="<?php //echo site_url(); ?>/listapproveabsensi">
+							<i class="fa fa-check-square-o"></i> 
+							Approval Absensi 
+						</a>
+					</li> -->
+				<?php //endif; ?>
 			</ul>
 		</div>
 	</div>

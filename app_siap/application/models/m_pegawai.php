@@ -8,7 +8,8 @@ class m_pegawai extends CI_Model
 
 	function getListPegawai($params)
 	{
-		$mresult = $this->tp_connpgsql->callSpCount('sp_getdatapegawai', $params, false);
+		// die(var_dump($params));
+		$mresult = $this->tp_connpgsql->callSpCount('htr.sp_getdatapegawaihtr', $params, false);
 		return $mresult;
 	}
 
@@ -17,7 +18,7 @@ class m_pegawai extends CI_Model
 		$this->load->database();
 		$this->db->trans_start();
 		$q = $this->db->query("
-			SELECT dailyreport.sp_addpegawai(
+			SELECT htr.sp_addpegawai(
 				?,?,?,?,?,?,?,?,?,?,?,?
 			);
 		", $params);
@@ -31,7 +32,7 @@ class m_pegawai extends CI_Model
 		$this->load->database();
 		$this->db->trans_start();
 		$q = $this->db->query("
-			SELECT dailyreport.sp_upddatapegawai(?,?,?,?,?,?,?,?,?,?,?,?,?,?);
+			SELECT htr.sp_upddatapegawai(?,?,?,?,?,?,?,?,?,?,?,?,?,?);
 		", $params);
 		$this->db->trans_complete();
 		$this->db->close();

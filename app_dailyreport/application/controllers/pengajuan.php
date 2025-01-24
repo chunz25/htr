@@ -1,4 +1,5 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (!defined('BASEPATH'))
+	exit('No direct script access allowed');
 
 class pengajuan extends Wfh_Controller
 {
@@ -6,7 +7,7 @@ class pengajuan extends Wfh_Controller
 	{
 		parent::__construct();
 		$this->load->model('m_pengajuan');
-    	$this->load->library(array('form_validation'));
+		$this->load->library(array('form_validation'));
 	}
 
 	public function index()
@@ -20,7 +21,6 @@ class pengajuan extends Wfh_Controller
 		}
 	}
 
-
 	public function dailyreport()
 	{
 		$pegawaiid = $this->session->userdata('pegawaiid');
@@ -31,7 +31,6 @@ class pengajuan extends Wfh_Controller
 		$data['vopendate'] = $this->getOpenDate($pegawaiid);
 		$data['vinfopegawai'] = $this->getInfoPegawai();
 		$data['vinfoatasan'] = $this->infoAtasan();
-		// var_dump($data);die;
 		$data['vstatusdaily'] = $this->m_pengajuan->getStatusDaily($pegawaiid);
 		$data['vdraftdaily'] = json_encode($datadraft);
 		$data['pages'] = "pengajuan";
@@ -51,50 +50,25 @@ class pengajuan extends Wfh_Controller
 		return $mresult['firstrow'];
 	}
 
-	public function getListAtasan()
-	{
-		$params = array(
-			'v_satkerid' => '01',
-			'v_keyword' => ifunsetempty($_GET, 'keyword', ''),
-		);
-		$mresult = $this->m_pengajuan->getListAtasan($params);
-		$result = array('success' => true, 'data' => $mresult);
-		echo json_encode($result);
-	}
-
 	function infoAtasan()
 	{
 		$atasanid = $this->session->userdata('atasanid');
-		$verifikatorid = $this->session->userdata('verifikatorid');
-		$ratasan = $this->m_pengajuan->getappver($atasanid);
-		$rverify = '';
-		if (!empty($verifikatorid)) {
-			$rverify = $this->m_pengajuan->getappver($verifikatorid);
-		}
+		$verifid = $this->session->userdata('verifikatorid');
+		$rAtasan = $this->m_pengajuan->getAppVer($atasanid);
+		$rVerify = !empty($verifid) ? $this->m_pengajuan->getAppVer($verifid) : array();
 
-		/*$result = array(
-			'verifikatorid' => !empty($rverify[0]['pegawaiid']) ? $rverify[0]['pegawaiid'] : null,
-			'verifikatornik' => !empty($rverify[0]['nik']) ? $rverify[0]['nik'] : null,
-			'verifikatornama' => !empty($rverify[0]['nama']) ? $rverify[0]['nama'] : null,
-			'verifikatorjab' => !empty($rverify[0]['jabatan']) ? $rverify[0]['jabatan'] : null,
-			'atasanid' => !empty($rverify[0]['pegawaiid']) ? $rverify[0]['pegawaiid'] : $ratasan[0]['pegawaiid'],
-			'atasannik' => !empty($rverify[0]['nik']) ? $rverify[0]['nik'] : $ratasan[0]['nik'],
-			'atasannama' => !empty($rverify[0]['nama']) ? $rverify[0]['nama'] : $ratasan[0]['nama'],
-			'atasanjab' => !empty($rverify[0]['jabatan']) ? $rverify[0]['jabatan'] : $ratasan[0]['jabatan'],
-		);*/
-
-		$result = array(
+		return array(
 			'verifikatorid' => null,
 			'verifikatornik' => null,
 			'verifikatornama' => null,
 			'verifikatorjab' => null,
-			'atasanid' => $ratasan[0]['pegawaiid'],
-			'atasannik' => $ratasan[0]['nik'],
-			'atasannama' => $ratasan[0]['nama'],
-			'atasanjab' => $ratasan[0]['jabatan'],
+			'verifikatoremail' => null,
+			'atasanid' => !empty($rVerify[0]['pegawaiid']) ? $rVerify[0]['pegawaiid'] : $rAtasan[0]['pegawaiid'],
+			'atasannik' => !empty($rVerify[0]['nik']) ? $rVerify[0]['nik'] : $rAtasan[0]['nik'],
+			'atasannama' => !empty($rVerify[0]['nama']) ? $rVerify[0]['nama'] : $rAtasan[0]['nama'],
+			'atasanjab' => !empty($rVerify[0]['jabatan']) ? $rVerify[0]['jabatan'] : $rAtasan[0]['jabatan'],
+			'atasanemail' => !empty($rVerify[0]['email']) ? $rVerify[0]['email'] : $rAtasan[0]['email'],
 		);
-			
-		return $result;
 	}
 
 	public function cekPengajuanDaily()
@@ -211,7 +185,7 @@ class pengajuan extends Wfh_Controller
 
 		$this->form_validation->set_message('matches', 'Konfimasi password tidak sesuai dengan password baru.');
 		if ($this->form_validation->run() == FALSE) {
-			$data['status']  = " ";
+			$data['status'] = " ";
 			$this->load->view('v_changepassword', $data);
 		} else {
 			$this->m_pengajuan->update($pegawaiid);
@@ -233,7 +207,7 @@ class pengajuan extends Wfh_Controller
 
 	function berhasil()
 	{
-		$data['status']  = "berhasil";
+		$data['status'] = "berhasil";
 		$this->load->view('v_changepassword', $data);
 	}
 }

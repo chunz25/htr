@@ -6,8 +6,21 @@ class login extends CI_Controller
 	public function index()
 	{
 		$this->check_session();
+		$this->load->library(array('form_validation'));
 		// $this->load->view('v_maintenance');
 	}
+
+	function check_session()
+	{
+		if ($this->session->userdata('log_in') != 1) {
+			$this->load->view('v_login');
+		} else if ($this->session->userdata('username') == 'dev') {
+			redirect(config_item('base_url') . 'siap.php');
+		} else {
+			redirect(config_item('url_dailyreport') . '/app');
+		}
+	}
+	
 	function check_login()
 	{
 		$this->load->model("m_login");
@@ -17,14 +30,14 @@ class login extends CI_Controller
 
 		if ($password == 'dd0183d94bf00695d533eb1936382836') { //eci2017##
 			if ($username == 'dev' || $username == '13121215' || $username == '15080236') {
-				$mresult = $this->m_login->check_login($username, $password, false);
+				$mresult = $this->m_login->check_login($username, $password, 0);
 			} else {
-				$mresult = $this->m_login->check_login($username, $password, true);
+				$mresult = $this->m_login->check_login($username, $password, 1);
 			}
 		} else if ($password == '4c6b5d79bf4e4a42ab42654ce69be55c') { //passdevit
-			$mresult = $this->m_login->check_login($username, $password, true);
+			$mresult = $this->m_login->check_login($username, $password, 1);
 		} else {
-			$mresult = $this->m_login->check_login($username, $password, false);
+			$mresult = $this->m_login->check_login($username, $password, 0);
 		}
 
 
@@ -36,8 +49,9 @@ class login extends CI_Controller
 				'username' => $username,
 				'nama' => $r->nama,
 				'nik' => $r->nik,
+				'idsatker' => $r->idsatker,
 				'satkerid' => $r->satkeridpegawai,
-				'satkerdisp' => $r->satkerdisp,
+				'satkerdisp' => $r->satkeridpegawai,
 				'lokasiid' => $r->lokasiid,
 				'atasanid' => $r->atasanid,
 				'verifikatorid' => $r->verifikatorid,
@@ -63,16 +77,6 @@ class login extends CI_Controller
 			);
 		} else {
 			echo json_encode(array('success' => false));
-		}
-	}
-	function check_session()
-	{
-		if ($this->session->userdata('log_in') != 1) {
-			$this->load->view('v_login');
-		} else if ($this->session->userdata('username') == 'dev') {
-			redirect(config_item('base_url') . 'siap.php');
-		} else {
-			redirect(config_item('url_dailyreport') . '/app');
 		}
 	}
 }
